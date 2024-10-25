@@ -1,12 +1,16 @@
 package com.example.learnandroid;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -23,6 +27,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.learnandroid.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.text.DecimalFormat;
@@ -30,42 +36,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    FrameLayout frameLayout;
-    TabLayout tabLayout;
+    Button btnXacNhan;
+    EditText editUserName,editPassword,editEmail;
+    CheckBox cbRemember;
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        frameLayout=(FrameLayout)findViewById(R.id.frameLayout);
-        tabLayout=(TabLayout)findViewById(R.id.tabLayout);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,new FirstFragment()).addToBackStack(null).commit();
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        btnXacNhan=findViewById(R.id.buttonXacNhan);
+        editUserName=findViewById(R.id.editTextUserName);
+        editPassword=findViewById(R.id.editTextPassword);
+        editEmail=findViewById(R.id.editTextEmail);
+        cbRemember=findViewById(R.id.checkBoxRemember);
+        sharedPreferences=getSharedPreferences("dataLogin",MODE_PRIVATE);
+        editUserName.setText(sharedPreferences.getString("taikhoan",""));
+        editPassword.setText(sharedPreferences.getString("matkhau",""));
+        editEmail.setText(sharedPreferences.getString("email",""));
+        cbRemember.setChecked(sharedPreferences.getBoolean("checked",false));
+        btnXacNhan.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Fragment fragment=null;
-                switch(tab.getPosition()){
-                    case 0:
-                        fragment= new FirstFragment();
-                        break;
-                    case 1:
-                        fragment= new SecondFragment();
-                        break;
-                    case 2:
-                        fragment=new ThirdFragment();
-                        break;
+            public void onClick(View view) {
+                String username=editUserName.getText().toString().trim();
+                String password=editPassword.getText().toString().trim();
+                String email=editEmail.getText().toString().trim();
+                if(username.equals("VanHuy")&&password.equals("123123az")&&email.equals("Phamvahuy2004@gmail.com")){
+                    Toast.makeText(MainActivity.this,"Đăng nhập thành công",Toast.LENGTH_SHORT).show();
+                    if(cbRemember.isChecked()){
+                        SharedPreferences.Editor editor=sharedPreferences.edit();
+                        editor.putString("taikhoan",username);
+                        editor.putString("matkhau",password);
+                        editor.putString("email",email);
+                        editor.putBoolean("checked",true);
+                        editor.commit();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Lỗi đăng nhập",Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                    editor.remove("taikhoan");
+                    editor.remove("matkhau");
+                    editor.remove("email");
+                    editor.remove("checked");
+                    editor.commit();
                 }
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commit();
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
         EdgeToEdge.enable(this);
