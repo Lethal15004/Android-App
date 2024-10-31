@@ -36,51 +36,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnXacNhan;
-    EditText editUserName,editPassword,editEmail;
-    CheckBox cbRemember;
-    SharedPreferences sharedPreferences;
+    private static final int REQUEST_CONTACT_ASK_PERMISSIONS=1001;
+    private static final int REQUEST_SMS_ASK_PERMISSIONS=1002;
+    Button btn1,btn2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnXacNhan=findViewById(R.id.buttonXacNhan);
-        editUserName=findViewById(R.id.editTextUserName);
-        editPassword=findViewById(R.id.editTextPassword);
-        editEmail=findViewById(R.id.editTextEmail);
-        cbRemember=findViewById(R.id.checkBoxRemember);
-        sharedPreferences=getSharedPreferences("dataLogin",MODE_PRIVATE);
-        editUserName.setText(sharedPreferences.getString("taikhoan",""));
-        editPassword.setText(sharedPreferences.getString("matkhau",""));
-        editEmail.setText(sharedPreferences.getString("email",""));
-        cbRemember.setChecked(sharedPreferences.getBoolean("checked",false));
-        btnXacNhan.setOnClickListener(new View.OnClickListener() {
+        EdgeToEdge.enable(this);
+        addControl();
+        addEvents();
+
+    }
+    private void addEvents(){
+        btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username=editUserName.getText().toString().trim();
-                String password=editPassword.getText().toString().trim();
-                String email=editEmail.getText().toString().trim();
-                if(username.equals("VanHuy")&&password.equals("123123az")&&email.equals("Phamvahuy2004@gmail.com")){
-                    Toast.makeText(MainActivity.this,"Đăng nhập thành công",Toast.LENGTH_SHORT).show();
-                    if(cbRemember.isChecked()){
-                        SharedPreferences.Editor editor=sharedPreferences.edit();
-                        editor.putString("taikhoan",username);
-                        editor.putString("matkhau",password);
-                        editor.putString("email",email);
-                        editor.putBoolean("checked",true);
-                        editor.commit();
-                    }
-                }else{
-                    Toast.makeText(MainActivity.this,"Lỗi đăng nhập",Toast.LENGTH_SHORT).show();
-                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                    editor.remove("taikhoan");
-                    editor.remove("matkhau");
-                    editor.remove("email");
-                    editor.remove("checked");
-                    editor.commit();
-                }
+                xuLyMoManHinhDanhBa();
             }
         });
-        EdgeToEdge.enable(this);
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                xuLyMoManHinhTinNhan();
+            }
+        });
+    }
+    private void xuLyMoManHinhTinNhan(){
+
+    }
+    private void xuLyMoManHinhDanhBa(){
+        Intent intent = new Intent(MainActivity.this, DanhBa.class);
+        startActivity(intent);
+    }
+    private void addControl(){
+        btn1=findViewById(R.id.btn1);
+        btn2=findViewById(R.id.btn2);
     }
 }
